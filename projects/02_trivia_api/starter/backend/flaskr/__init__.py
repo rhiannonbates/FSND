@@ -234,16 +234,17 @@ def create_app(test_config=None):
         if question.id not in previous_questions:
           quiz_questions.append(question.format())
 
-      if len(quiz_questions) != 0:
-        return jsonify({
-          'success': True,
-          'question': random.choice(quiz_questions)
-        })
-      else:
+      if len(quiz_questions) == 0:
         return jsonify({
           'success': False,
           'question': None
         })
+
+      else:
+        return jsonify({
+          'success': True,
+          'question': random.choice(quiz_questions)
+        })     
         
     except:
       abort(404)
