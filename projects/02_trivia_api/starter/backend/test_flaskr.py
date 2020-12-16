@@ -119,7 +119,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['created'])
         self.assertTrue(len(data['questions']))
 
-    def test_not_allowed_to_create_new_question(self):
+    def test_405_not_allowed_to_create_new_question(self):
         """ This test represents if the user is not allowed to create a new question """
         res = self.client().post('/questions/12', json=self.new_question)
         data = json.loads(res.data)
@@ -180,8 +180,8 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get('/quizzes')
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code, 404)
-        self.assertEqual(data['success'], False)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
         self.assertTrue(len(data['questions']))
 
 # Make the tests conveniently executable
