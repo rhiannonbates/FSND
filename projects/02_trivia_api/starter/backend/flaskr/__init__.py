@@ -18,12 +18,12 @@ def paginate_questions(request, selection):
 
   return current_questions
 
-def get_categories_list():
+def category_list():
   # Return an object with the key pairs of category id and category type
-    categories = {}
+    category_list = {}
     for category in Category.query.all():
-        categories[category.id] = category.type
-    return categories
+        category_list[category.id] = category.type
+    return category_list
 
 def create_app(test_config=None):
   # create and configure the app
@@ -50,7 +50,7 @@ def create_app(test_config=None):
   '''
   @app.route('/categories')
   def get_categories():
-    categories = get_categories_list()
+    categories = category_list()
 
     if len(categories) == 0:
       abort(404)
@@ -76,7 +76,7 @@ def create_app(test_config=None):
   def get_questions():
     questions = Question.query.order_by(Question.id).all()
     current_questions = paginate_questions(request, questions)
-    categories = get_categories_list()
+    categories = category_list()
 
     if len(current_questions) == 0:
       abort(404)
@@ -243,36 +243,6 @@ def create_app(test_config=None):
     except:
       abort(404)
 
-
-    #   def play_quiz():
-    # try:
-    #   body = request.get_json()
-    #   if not('quiz_category' in body and 'previous_questions' in body):
-    #     abort(404)
-
-    #   quiz_category = body.get('quiz_category')
-    #   previous_questions = body.get('previous_questions')
-
-    #   if quiz_category['type']=='click':
-    #     questions = Question.query.filter(Question.id.notin_(previous_questions)).all()
-    #   else:
-    #     questions = Question.query.filter_by(category=quiz_category['id']).all()
-
-    #   available_questions = []
-
-    #   format_questions = [question.format() for question in questions]
-    #   for qn in format_questions:
-    #     if qn['id'] not in previous_questions:
-    #       available_questions.append(qn)
-
-    #   if len(available_questions) > 0:
-    #     selected_question = random.choice(available_questions)
-    #     return jsonify({
-    #       'success': True,
-    #       'question': selected_question
-    #     })
-    # except:
-    #   abort(422)
   '''
   @Done:
   Create error handlers for all expected errors
