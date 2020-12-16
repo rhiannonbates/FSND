@@ -9,6 +9,7 @@ from models import setup_db, Question, Category
 QUESTIONS_PER_PAGE = 10
 
 def paginate_questions(request, selection):
+  # Paginates the questions to 10 per page. Note pages starts at 1.
   page = request.args.get('page', 1, type=int)
   start = (page - 1) * QUESTIONS_PER_PAGE
   end = start + QUESTIONS_PER_PAGE
@@ -21,8 +22,10 @@ def paginate_questions(request, selection):
 def category_list():
   # Return an object with the key pairs of category id and category type
     category_list = {}
+
     for category in Category.query.all():
         category_list[category.id] = category.type
+
     return category_list
 
 def create_app(test_config=None):
@@ -31,9 +34,8 @@ def create_app(test_config=None):
   setup_db(app)
 
   '''
-  @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
+  @Done: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
-  cors = CORS(app)
   cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
   '''
   @DONE: Use the after_request decorator to set Access-Control-Allow
@@ -199,7 +201,7 @@ def create_app(test_config=None):
     except:
       abort(422)
   '''
-  @TODO:
+  @Done:
   Create a POST endpoint to get questions to play the quiz.
   This endpoint should take category and previous question parameters
   and return a random questions within the given category,
@@ -209,12 +211,14 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not.
   '''
-  app.route('/quizzes', methods=['POST'])
+  @app.route('/quizzes', methods=['POST'])
   def play_quiz():
     body = request.get_json()
+
     previous_questions = body.get('previous_questions', [])
     quiz_category = body.get('quiz_category', None)
     category_id = quiz_category.get('id')
+
     try:
       if quiz_category:
         if category_id == 0:
@@ -240,6 +244,7 @@ def create_app(test_config=None):
           'success': False,
           'question': None
         })
+        
     except:
       abort(404)
 

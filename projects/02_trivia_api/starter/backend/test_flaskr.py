@@ -38,7 +38,7 @@ class TriviaTestCase(unittest.TestCase):
         pass
 
     """
-    TODO
+    Done
     Write at least one test for each test for successful operation and for expected errors.
     """
     ##### Tests for getting categories ####
@@ -88,7 +88,7 @@ class TriviaTestCase(unittest.TestCase):
     ##### Tests for deleting a question ####
     def test_delete_question(self):
         """ This test represents deleting a question """
-        res = self.client().delete('/questions/6')
+        res = self.client().delete('/questions/13')
         data = json.loads(res.data)
 
         questions = Question.query.order_by(Question.id).all()
@@ -177,12 +177,22 @@ class TriviaTestCase(unittest.TestCase):
 
     ##### Tests to play game ####
     def test_play_game(self):
-        res = self.client().get('/quizzes')
+        """ This test represent getting the question to play the quiz given a category """
+        res = self.client().post('/quizzes', json={"quiz_category":{"type":"science","id":1}, "previous_questions":[7]})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertTrue(len(data['questions']))
+        self.assertTrue(len(data['question']))
+
+    def test_404_play_game_no_category(self):
+        """ This test represent getting the question to play the quiz given a category """
+        res = self.client().post('/quizzes', json={"quiz_category":{"id":10}, "previous_questions":[]})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Resource not found')
 
 # Make the tests conveniently executable
 if __name__ == "__main__":

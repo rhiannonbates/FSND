@@ -259,7 +259,7 @@ POST '/questions'
 
 Post a new question:
 - If posting a new question, it requires the question and answer text, category, and difficulty score.
-- Request Arguments: None
+- Request Arguments: question, answer, category and difficulty
 - Returns: An object containing the created id, questions (as an array of objects paginated by 10), success value and total number of questions.
 - Sample: curl -X POST -H "Content-Type: application/json" -d '{"question":"What is the highest mountain in the world?","answer":"Mount Everest","category":3,"difficulty":3}' http://127.0.0.1:5000/questions
 {
@@ -342,7 +342,7 @@ Post a new question:
 
 Search for term: 
 - if it is searching the questions for a search term, it requires the search term.
-- Request Arguments: None
+- Request Arguments: Search Term
 - Returns: An object containing the current category, resulting questions, success value and total number of resulting questions.
 - Sample: curl -X POST -H "Content-Type: application/json" -d '{"searchTerm":"team"}' http://127.0.0.1:5000/questions
 {
@@ -363,9 +363,20 @@ Search for term:
 POST '/quizzes'
 - Fetches a list of questions to allow user to play the quiz.
 - This endpoint should take category and previous question parameters and return a random question within the given category, if provided, and that is not one of the previous questions.
-- Request Arguments: None
+- Request Arguments: quiz category and previous questions
 - Returns: An object containing the question and success value.
-- Sample: 
+- Sample:  curl -X POST http://127.0.0.1:5000/quizzes -H "Content-Type: application/json" -d '{"quiz_category":{"type":"science","id":1}, "previous_questions":[7]}'
+{
+  "question": {
+    "answer": "Blood",
+    "category": 1,
+    "difficulty": 4,
+    "id": 22,
+    "question": "Hematology is a branch of medicine involving the study of what?"
+  },
+  "success": true
+}
+
 
 DELETE '/questions/<int:question_id>'
 - Deletes a question using the question id, if it exists. 
