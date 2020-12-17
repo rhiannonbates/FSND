@@ -10,15 +10,21 @@ QUESTIONS_PER_PAGE = 10
 
 
 def paginate_questions(request, selection):
-  # Paginates the questions to 10 per page. Note pages starts at 1.
+    # Paginates the questions to 10 per page. Note pages starts at 1.
+    questions_limit = request.args.get('limit', QUESTIONS_PER_PAGE, type=int)
     page = request.args.get('page', 1, type=int)
-    start = (page - 1) * QUESTIONS_PER_PAGE
-    end = start + QUESTIONS_PER_PAGE
+    current_index = page - 1
 
+    questions = selection.limit(
+      questions_limit).offset(current_index * questions_limit)
+    return questions
+
+
+def format_questions(selection):
+    # Ensures the questions are in the correct format
     questions = [question.format() for question in selection]
-    current_questions = questions[start:end]
 
-    return current_questions
+    return questions
 
 
 def category_list():
@@ -83,8 +89,8 @@ def create_app(test_config=None):
     '''
     @app.route('/questions')
     def get_questions():
-        questions = Question.query.order_by(Question.id).all()
-        current_questions = paginate_questions(request, questions)
+        current_question = paginate_questions(request, Question.query)
+        current_questions = format_questions(current_question.all())
         categories = category_list()
 
         if len(current_questions) == 0:
@@ -93,7 +99,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': True,
             'questions': current_questions,
-            'total_questions': len(questions),
+            'total_questions': len(Question.query.all()),
             'categories': categories,
             'current_category': None
         })
@@ -109,20 +115,20 @@ def create_app(test_config=None):
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_specific_question(question_id):
         try:
-            selection = Question.query.filter(Question.id == question_id)
-            question = selection.one_or_none()
+            question = Question.query.filter(
+              Question.id == question_id).one_or_none()
             if question is None:
                 abort(404)
 
             question.delete()
-            selection = Question.query.order_by(Question.id).all()
-            current_questions = paginate_questions(request, selection)
-
+            selection = paginate_questions(
+              request, Question.query.order_by(Question.id))
+            current_questions = format_questions(selection.all())
             return jsonify({
                 'success': True,
                 'deleted': question_id,
                 'questions': current_questions,
-                'total_questions': len(selection)
+                'total_questions': len(Question.query.all())
             })
 
         except Exception:
@@ -149,10 +155,11 @@ def create_app(test_config=None):
         search = body.get('searchTerm', None)
         try:
             if search:
-                selection = Question.query.order_by(Question.id).filter(
-                  Question.question.ilike('%{}%'.format(search)))
-                current_questions = paginate_questions(request, selection)
-
+                selection = paginate_questions(
+                  request, Question.query.order_by(
+                    Question.id).filter(Question.question.ilike(
+                      '%{}%'.format(search))))
+                current_questions = format_questions(selection.all())
                 return jsonify({
                     'success': True,
                     'questions': current_questions,
@@ -167,14 +174,15 @@ def create_app(test_config=None):
                                        difficulty=new_difficulty)
                 newQuestion.insert()
 
-                selection = Question.query.order_by(Question.id).all()
-                current_questions = paginate_questions(request, selection)
+                selection = paginate_questions(
+                  request, Question.query.order_by(Question.id))
+                current_questions = format_questions(selection.all())
 
                 return jsonify({
                     'success': True,
                     'created': newQuestion.id,
                     'questions': current_questions,
-                    'total_questions': len(selection)
+                    'total_questions': len(Question.query.all())
                 })
 
         except Exception:
@@ -201,14 +209,15 @@ def create_app(test_config=None):
     @app.route('/categories/<int:category_id>/questions')
     def get_questions_for_category(category_id):
         try:
-            selection = Question.query.order_by(Question.id).filter(
-              Question.category == category_id).all()
-            current_questions = paginate_questions(request, selection)
+            selection = paginate_questions(
+              request, Question.query.order_by(
+                Question.id).filter(Question.category == category_id))
+            current_questions = format_questions(selection.all())
 
             return jsonify({
                 'success': True,
                 'questions': current_questions,
-                'total_questions': len(selection),
+                'total_questions': len(current_questions),
                 'current_category': category_id
             })
         except Exception:

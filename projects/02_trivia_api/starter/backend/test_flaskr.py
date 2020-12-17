@@ -93,7 +93,7 @@ class TriviaTestCase(unittest.TestCase):
     ##### Tests for deleting a question ####
     def test_delete_question(self):
         """ This test represents deleting a question """
-        res = self.client().delete('/questions/13')
+        res = self.client().delete('/questions/6')
         data = json.loads(res.data)
 
         questions = Question.query.order_by(Question.id).all()
