@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\backend",
+    "\\backend\\src",
+    "\\backend\\src\\auth",
+    "\\frontend"
+  ],
+  "SelectedNode": "\\backend\\src\\auth\\auth.py",
+  "PreviewInSolutionExplorer": false
+}
